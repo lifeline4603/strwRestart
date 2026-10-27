@@ -1,8 +1,12 @@
 local alpha1, alpha2, alpha3 = 0, 0, 0
-local repAlphas = {
-    [1] = {0,   0,   0},
-    [3] = {130, 255, 0},
-    [5] = {0,   0, 255}
+
+local steps = {
+    {0,   0,   0},
+    {130, 255, 0, "ambient/alarms/klaxon1.wav"},
+    {0,   0,   0},
+    {130, 255, 0, "ambient/alarms/klaxon1.wav"},
+    {0,   0,   0},
+    {0,   0,   255, "ambient/explosions/explode_1.wav"}
 }
 
 surface.CreateFont("SHITTYFONT", {
@@ -19,18 +23,17 @@ net.Receive("strwRestart", function()
         Color(255, 255, 255), "Server is now restarting..."
     )
 
+    alpha1, alpha2, alpha3 = 130, 255, 0
     local rep = 0
 
-    timer.Create("TransparencyCycle", 0.5, 5, function()
+    timer.Create("TransparencyCycle", 0.5, #steps, function()
         rep = rep + 1
 
-        local alphas = repAlphas[rep]
-        if alphas then
-            alpha1, alpha2, alpha3 = alphas[1], alphas[2], alphas[3]
-        end
+        local step = steps[rep]
+        alpha1, alpha2, alpha3 = step[1], step[2], step[3]
 
-        if rep == 2 or rep == 4 or rep == 5 then
-            surface.PlaySound("ambient/alarms/klaxon1.wav")
+        if step[4] then
+            surface.PlaySound(step[4])
         end
     end)
 
